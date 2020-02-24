@@ -1,0 +1,37 @@
+{
+  "name": "igg-weekly-jam-0",
+  "version": "1.0.0",
+  "description": "Juego para la primera (primera!) edición de Indie Game Garage - Weekly Jam.",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel src/index.ts"
+  },
+  "staticPath": {
+    "source": [
+      "/src/assets",
+      "/src/index.html"
+    ],
+    "target": [
+      "/dist/assets",
+      "/dist/index.html"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmoyano16/igg-weekly-jam-0.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mmoyano16/igg-weekly-jam-0/issues"
+  },
+  "homepage": "https://github.com/mmoyano16/igg-weekly-jam-0#readme",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-copy": "^1.0.2",
+    "typescript": "^3.8.2"
+  },
+  "dependencies": {
+    "phaser": "^3.22.0"
+  }
+}

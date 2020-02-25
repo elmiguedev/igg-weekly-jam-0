@@ -23,7 +23,12 @@ export default class BootloaderScene extends Phaser.Scene {
      */
     preload() {
 
-        this.load.image("square", "../assets/img/square.png");
+        this.load.spritesheet("ant", "../assets/img/ant_prototype.png", {
+            frameWidth: 8,
+            frameHeight: 8
+        });
+
+        this.load.image("grass", "../assets/img/grass_test.png")
 
         this.load.on('complete', () => {
             this.scene.start('MainScene');

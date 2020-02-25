@@ -19,8 +19,9 @@ class Game {
         this.config = {
             type: Phaser.AUTO,
 
-            width: 320,
-            height: 200,
+            width: 128,
+            height: 96,
+            zoom: 4,
             render: {
                 pixelArt: true,
             },

@@ -33,10 +33,14 @@ export default class MainScene extends Phaser.Scene {
     createAnt() {
         this.anims.create({
             key: "ant_walk",
-            frames: this.anims.generateFrameNames("ant", { start: 0, end: 2 }),
+            frames: this.anims.generateFrameNames("tiles", { start: 4, end: 5 }),
             frameRate: 20
         });
-        this.ant = this.add.sprite(100, 100, "ant", 1);
+        const x = this.game.canvas.width / 2;
+        const y = this.game.canvas.height / 2;
+        this.ant = this.add.sprite(x, y, "tiles", 4);
+
+        this.cameras.main.startFollow(this.ant);
     }
 
     createKeys() {

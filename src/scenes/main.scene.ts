@@ -6,11 +6,13 @@ export default class MainScene extends Phaser.Scene {
     // properties 
     // ----------------------
 
-    private ant: Phaser.GameObjects.Sprite;
+    private ant: Phaser.Physics.Arcade.Sprite;
     private keys: any;
     private mapLayers: {
         map: Phaser.Tilemaps.Tilemap,
-        background: Phaser.Tilemaps.StaticTilemapLayer
+        background: Phaser.Tilemaps.StaticTilemapLayer,
+        obstacles: Phaser.Tilemaps.StaticTilemapLayer,
+        overlayer: Phaser.Tilemaps.StaticTilemapLayer,
     };
 
     private playerCamera:any;
@@ -35,6 +37,7 @@ export default class MainScene extends Phaser.Scene {
         this.createAnt();
         this.configureCamera();
         this.createHud();
+        this.createCollisions();
     }
 
     createHud() {
@@ -47,11 +50,27 @@ export default class MainScene extends Phaser.Scene {
         const map = this.make.tilemap({ key: "l_1" });
         const tileset = map.addTilesetImage("map_tiles", "map_tiles", 8, 8, 0, 0);
         const background = map.createStaticLayer("background", tileset, 0, 0);
+        const obstacles = map.createStaticLayer("obstacles", tileset, 0, 0).setDepth(5);
+        const overlayer = map.createStaticLayer("overlayer", tileset, 0, 0).setDepth(10);
+
 
         this.mapLayers = {
             map: map,
-            background: background
+            background: background,
+            obstacles: obstacles,
+            overlayer: overlayer,
         }
+    }
+
+    createCollisions() {
+        this.physics.world.setBoundsCollision(true, true, true, true);
+        this.physics.world.bounds.width = this.mapLayers.background.width;
+        this.physics.world.bounds.height = this.mapLayers.background.height;
+        this.mapLayers.obstacles.setCollisionByProperty({
+            collides: true
+        })
+        this.physics.add.collider(this.ant,this.mapLayers.obstacles);
+
     }
 
     configureCamera() {
@@ -74,7 +93,11 @@ export default class MainScene extends Phaser.Scene {
         });
         const x = this.mapLayers.map.widthInPixels / 2;
         const y = this.mapLayers.map.heightInPixels - 8;
-        this.ant = this.add.sprite(x, y, "ant", 1);
+        this.ant = this.physics.add.sprite(x, y, "ant", 1);
+        this.ant.setCollideWorldBounds(true);
+        this.ant.setDepth(5);
+        this.ant.setDrag(500, 500)
+        this.ant.setMaxVelocity(50, 50);
 
         this.cameras.main.startFollow(this.ant);
     }
@@ -104,23 +127,24 @@ export default class MainScene extends Phaser.Scene {
 
     checkInput() {
         if (this.keys.up.isDown) {
-            this.ant.y -= 1;
+            this.ant.setAccelerationY(-300);
             this.ant.anims.play("ant_walk", true);
+        } else if (this.keys.down.isDown) {
+            this.ant.setAccelerationY(100);
+            this.ant.anims.play("ant_walk", true);
+        } else {
+            this.ant.setAccelerationY(0);
         }
-        if (this.keys.down.isDown) {
-            this.ant.y += 1;
-            this.ant.anims.play("ant_walk", true);
 
-        }
         if (this.keys.left.isDown) {
-            this.ant.x -= 1;
+            this.ant.setAccelerationX(-300);
             this.ant.anims.play("ant_walk", true);
 
-        }
-        if (this.keys.right.isDown) {
-            this.ant.x += 1;
+        } else if (this.keys.right.isDown) {
+            this.ant.setAccelerationX(300);
             this.ant.anims.play("ant_walk", true);
-
+        } else {
+            this.ant.setAccelerationX(0);
         }
     }
 

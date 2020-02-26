@@ -36,7 +36,7 @@ export default class MainScene extends Phaser.Scene {
         this.createKeys();
         this.createAnt();
         this.configureCamera();
-        this.createHud();
+        // this.createHud();
         this.createCollisions();
     }
 
@@ -76,7 +76,7 @@ export default class MainScene extends Phaser.Scene {
     configureCamera() {
         // this is a fix for tiles jitter
         this.playerCamera = new Phaser.Geom.Point(this.ant.x, this.ant.y);
-        this.cameras.main.startFollow(this.playerCamera,true,0,1);
+        this.cameras.main.startFollow(this.playerCamera,true,0,0.55 );
         this.cameras.main.setBounds(
             0,
             0,
@@ -120,9 +120,9 @@ export default class MainScene extends Phaser.Scene {
     }
 
     update() {
-       this.checkInput();
-       this.checkCamera();
-       this.checkDebugInfo();
+        this.checkInput();
+        this.checkCamera();
+    //    this.checkDebugInfo();
     }
 
     checkInput() {

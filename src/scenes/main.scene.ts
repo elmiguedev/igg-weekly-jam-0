@@ -2,6 +2,8 @@ import * as Phaser from "phaser";
 
 import Ant from "../entities/ant";
 import AntHud from "../entities/ant.hud";
+import Rock from "../entities/rock";
+import AcidParticle from "../entities/acid.particle";
 
 export default class MainScene extends Phaser.Scene {
 
@@ -39,6 +41,9 @@ export default class MainScene extends Phaser.Scene {
         this.createAnt();
         this.configureCamera();
         this.createHud();
+
+        this.createRocks();
+
         this.createCollisions();
     }
 
@@ -71,9 +76,17 @@ export default class MainScene extends Phaser.Scene {
             collides: true
         })
         this.physics.add.collider(this.ant, this.mapLayers.obstacles);
-        this.physics.add.collider(this.ant.acid, this.mapLayers.obstacles, (a:Phaser.Physics.Arcade.Sprite,o) => {
-            a.setActive(false).setVisible(false);
+        this.physics.add.collider(this.ant.acid, this.mapLayers.obstacles, (a:AcidParticle,o) => {
+           a.hit();
         })
+        
+        this.physics.add.collider(this.ant, this.rocks);
+        this.physics.add.collider(this.ant.acid, this.rocks, (a:AcidParticle,r:Rock) => {
+            a.hit();
+            r.hit();
+        })
+
+
     }
 
     configureCamera() {
@@ -114,6 +127,21 @@ export default class MainScene extends Phaser.Scene {
             const y = Phaser.Math.Between(20, 180);
             this.add.image(x, y, "grass");
         }
+    }
+
+    private rocks: Phaser.Physics.Arcade.Group;
+    createRocks() {
+        this.rocks = this.physics.add.group({
+            maxSize: 20,
+            classType: Rock,
+            immovable: true
+        });
+        // r.setImmovable(true);
+        const r1 = new Rock(this).setVisible(true).setActive(true).setPosition(20,740);
+        const r2 = new Rock(this).setVisible(true).setActive(true).setPosition(30,740);
+        const r3 = new Rock(this).setVisible(true).setActive(true).setPosition(25,750);
+
+        this.rocks.addMultiple([r1,r2,r3]);
     }
 
     update() {

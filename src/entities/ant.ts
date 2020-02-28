@@ -1,16 +1,18 @@
 import * as Phaser from "phaser";
 import Entity from "../core/entity";
+import AcidParticle from "./acid.particle";
 
 export default class Ant extends Entity {
 
     // props
     // -------------------
-    private acidLevel: number = 100;
+    private acidLevelMax: number = 1000;
+    private acidLevel: number = this.acidLevelMax;
     private life: number = 100;
     private maxVelocity: number = 50;
     private acceleration: number = 300;
     public acid: Phaser.Physics.Arcade.Group;
-    private acidRegenerationSpeed:number = 100;
+    private acidRegenerationSpeed: number = 50;
 
     // constructor
     // -------------------
@@ -54,17 +56,17 @@ export default class Ant extends Entity {
         // create acid particles group
         this.acid = this.scene.physics.add.group({
             maxSize: 20,
-            key: "acid"
+            classType: AcidParticle
         });
         for (let i = 0; i < 20; i++) {
-            const e = this.scene.physics.add.sprite(0, 0, "acid");
-            e.setActive(false).setVisible(false);
+            const e = new AcidParticle(this.scene);
+            e.kill();
             this.acid.add(e);
         }
 
         // create acid-regenerator
         setInterval(() => {
-            if (this.acidLevel < 100)
+            if (this.acidLevel < this.acidLevelMax)
                 this.acidLevel++;
         }, this.acidRegenerationSpeed);
 
@@ -116,15 +118,12 @@ export default class Ant extends Entity {
     }
 
     private createAcidParticle() {
-        const acid_particle = this.acid.getFirstDead();
+        const acid_particle: AcidParticle = this.acid.getFirstDead();
         if (acid_particle) {
-            acid_particle.setPosition(this.x, this.y-6);
+            acid_particle.setPosition(this.x, this.y - 6);
             acid_particle.setVelocityY(-200);
             acid_particle.setVelocityX(Phaser.Math.Between(-100, 100));
-            acid_particle.setActive(true).setVisible(true);
-            setTimeout(() => {
-                acid_particle.setActive(false).setVisible(false);
-            }, 200);
+            acid_particle.revive();
         }
     }
 

@@ -39,11 +39,24 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
     // methods 
     // ----------------------
 
+    kill() {
+        this.setVisible(false).setActive(false);
+    }
+
+    revive() {
+        this.setVisible(true).setActive(true);
+    }
+
     configureEntity() {
 
         // check if is immovable
-        if (this.config.immovable) {
-            this.body.immovable = true;
+        if (this.config.immovable && this.config.immovable == true) {
+            this.setImmovable(true);
+        }
+
+        // check frame selction
+        if (this.config.frame) {
+            this.setFrame(this.config.frame);
         }
 
         // check animations

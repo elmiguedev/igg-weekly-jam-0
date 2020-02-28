@@ -1,11 +1,10 @@
 import * as Phaser from "phaser";
 import Entity from "../core/entity";
 
-export default class RedAnt extends Entity {
+export default class Trebol extends Entity {
 
     // props
     // -------------------
-    private antGenerationRate: number = 100;
 
     // constructor
     // -------------------
@@ -15,12 +14,9 @@ export default class RedAnt extends Entity {
             scene: scene,
             x: 0,
             y: 0,
-            key: "red_ant",
-            anims: [
-                { key: "red_ant_walk", start: 0, end: 2, repeat: true },
-            ],
+            key: "trebol",
+            immovable: true
         });
-
         this.init();
     }
 
@@ -28,10 +24,9 @@ export default class RedAnt extends Entity {
     // -------------------
 
     init() {
-
-        this.setCollideWorldBounds(true);
-        // @ts-ignore
-        this.body.onWorldBounds = true;
+        this.setOrigin(0.5, 1);
+        this.body.setSize(8, 8, false);
+        this.body.setOffset(8, 32)
     }
 
     update() {
@@ -40,6 +35,7 @@ export default class RedAnt extends Entity {
 
     // methods
     // -------------------
+
 
 
 }

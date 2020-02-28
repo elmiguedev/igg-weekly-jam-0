@@ -6,6 +6,8 @@ import Rock from "../entities/rock";
 import AcidParticle from "../entities/acid.particle";
 import Anthill from "../entities/anthill";
 import RedAnt from "../entities/redant";
+import Flower from "../entities/flower";
+import Trebol from "../entities/trebol";
 
 export default class MainScene extends Phaser.Scene {
 
@@ -17,8 +19,6 @@ export default class MainScene extends Phaser.Scene {
     private mapLayers: {
         map: Phaser.Tilemaps.Tilemap,
         background: Phaser.Tilemaps.StaticTilemapLayer,
-        obstacles: Phaser.Tilemaps.StaticTilemapLayer,
-        overlayer: Phaser.Tilemaps.StaticTilemapLayer,
         objects: Phaser.Tilemaps.ObjectLayer,
     };
 
@@ -26,7 +26,7 @@ export default class MainScene extends Phaser.Scene {
     private hud: AntHud;
     private rocks: Phaser.Physics.Arcade.Group;
     private redAntsGroup: Phaser.Physics.Arcade.Group;
-
+    private obstaclesGroup: Phaser.Physics.Arcade.Group;
 
     // constructor 
     // ----------------------
@@ -50,6 +50,7 @@ export default class MainScene extends Phaser.Scene {
 
         this.createRocks();
         this.createAnthills();
+        this.createObstacles();
 
         this.createCollisions();
     }
@@ -63,16 +64,14 @@ export default class MainScene extends Phaser.Scene {
         const map = this.make.tilemap({ key: "l_1" });
         const tileset = map.addTilesetImage("map_tiles", "map_tiles", 8, 8, 0, 0);
         const background = map.createStaticLayer("background", tileset, 0, 0);
-        const obstacles = map.createStaticLayer("obstacles", tileset, 0, 0).setDepth(5);
-        const overlayer = map.createStaticLayer("overlayer", tileset, 0, 0).setDepth(10);
+        // const obstacles = map.createStaticLayer("obstacles", tileset, 0, 0).setDepth(5);
+        // const overlayer = map.createStaticLayer("overlayer", tileset, 0, 0).setDepth(10);
         const objects = map.getObjectLayer("objects");
 
 
         this.mapLayers = {
             map: map,
             background: background,
-            obstacles: obstacles,
-            overlayer: overlayer,
             objects: objects
         }
     }
@@ -81,13 +80,13 @@ export default class MainScene extends Phaser.Scene {
         this.physics.world.setBoundsCollision(true, true, true, true);
         this.physics.world.bounds.width = this.mapLayers.background.width;
         this.physics.world.bounds.height = this.mapLayers.background.height;
-        this.mapLayers.obstacles.setCollisionByProperty({
-            collides: true
-        })
-        this.physics.add.collider(this.ant, this.mapLayers.obstacles);
-        this.physics.add.collider(this.ant.acid, this.mapLayers.obstacles, (a: AcidParticle, o) => {
-            a.hit();
-        })
+        // this.mapLayers.obstacles.setCollisionByProperty({
+        //     collides: true
+        // })
+        this.physics.add.collider(this.ant, this.obstaclesGroup);
+        // this.physics.add.collider(this.ant.acid, this.mapLayers.obstacles, (a: AcidParticle, o) => {
+        //     a.hit();
+        // })
 
         this.physics.add.collider(this.ant, this.rocks);
         this.physics.add.collider(this.ant.acid, this.rocks, (a: AcidParticle, r: Rock) => {
@@ -95,7 +94,7 @@ export default class MainScene extends Phaser.Scene {
             r.hit();
         })
 
-        this.physics.add.collider(this.redAntsGroup, this.mapLayers.obstacles);
+        // this.physics.add.collider(this.redAntsGroup, this.mapLayers.obstacles);
         this.physics.world.on('worldbounds', (body) => {
             if (body.gameObject instanceof RedAnt) {
                 body.gameObject.kill();
@@ -174,6 +173,31 @@ export default class MainScene extends Phaser.Scene {
         for (let i = 0; i < anthillsTiles.length; i++) {
             const a = new Anthill(this, this.redAntsGroup);
             a.setPosition(anthillsTiles[i].x, anthillsTiles[i].y);
+        }
+    }
+
+    createObstacles() {
+        this.obstaclesGroup = this.physics.add.group({ immovable: true });
+        for (let i = 0; i < this.mapLayers.objects.objects.length; i++) {
+            const o = this.mapLayers.objects.objects[i];
+            switch (o.type) {
+                case "flower":
+                    const f = new Flower(this);
+                    f.setPosition(o.x, o.y);
+                    f.setDepth(10);
+                    this.obstaclesGroup.add(f);
+                    break;
+
+                case "trebol":
+                    const t = new Trebol(this);
+                    t.setPosition(o.x, o.y);
+                    t.setDepth(10);
+                    this.obstaclesGroup.add(t);
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
 

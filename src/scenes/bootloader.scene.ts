@@ -25,6 +25,9 @@ export default class BootloaderScene extends Phaser.Scene {
 
         // load images
         this.load.image("acid", "../assets/img/acid.png");
+        this.load.image("flower", "../assets/img/flower.png");
+        this.load.image("trebol", "../assets/img/trebol.png");
+
 
         // load map_tiles
         this.load.image("map_tiles", "../assets/img/map_tiles.png");

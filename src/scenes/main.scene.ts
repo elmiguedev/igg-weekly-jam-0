@@ -1,6 +1,7 @@
 import * as Phaser from "phaser";
-import Hud from "../entities/hud";
+
 import Ant from "../entities/ant";
+import AntHud from "../entities/ant.hud";
 
 export default class MainScene extends Phaser.Scene {
 
@@ -17,7 +18,7 @@ export default class MainScene extends Phaser.Scene {
     };
 
     private playerCamera: any;
-    private hud: Hud;
+    private hud: AntHud;
 
     // constructor 
     // ----------------------
@@ -37,14 +38,13 @@ export default class MainScene extends Phaser.Scene {
         this.createKeys();
         this.createAnt();
         this.configureCamera();
-        // this.createHud();
+        this.createHud();
         this.createCollisions();
     }
 
     createHud() {
-        this.hud = new Hud(this);
-        this.hud.addText("ant x", 10, 10);
-        this.hud.addText("ant y", 10, 20);
+        this.hud = new AntHud(this);
+        this.hud.update(this.ant);
     }
 
     createMap() {
@@ -71,8 +71,8 @@ export default class MainScene extends Phaser.Scene {
             collides: true
         })
         this.physics.add.collider(this.ant, this.mapLayers.obstacles);
-        this.physics.add.collider(this.ant.acid, this.mapLayers.obstacles, () => {
-            console.log("choca acido")
+        this.physics.add.collider(this.ant.acid, this.mapLayers.obstacles, (a:Phaser.Physics.Arcade.Sprite,o) => {
+            a.setActive(false).setVisible(false);
         })
     }
 
@@ -119,6 +119,7 @@ export default class MainScene extends Phaser.Scene {
     update() {
         this.checkCamera();
         this.checkInput();
+        this.hud.update(this.ant);
         //    this.checkDebugInfo();
     }
 
@@ -141,6 +142,7 @@ export default class MainScene extends Phaser.Scene {
 
         if (this.keys.space.isDown) {
             this.ant.throwAcid();
+            
         }
     }
 

@@ -33,7 +33,7 @@ export default class Hud {
     }
 
     addText(key:string, x:number, y:number) {
-        const label = this.hudScene.add.bitmapText(x,y,"namco_font", key + ": ");
+        const label = this.hudScene.add.bitmapText(x,y,"namco_font", key + ": ",6);
         this.labels[key] = label;
     }
 

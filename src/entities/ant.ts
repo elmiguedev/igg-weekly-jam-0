@@ -10,7 +10,7 @@ export default class Ant extends Entity {
     private maxVelocity: number = 50;
     private acceleration: number = 300;
     public acid: Phaser.Physics.Arcade.Group;
-    private acidRegenerationSpeed:number = 200;
+    private acidRegenerationSpeed:number = 100;
 
     // constructor
     // -------------------
@@ -128,5 +128,12 @@ export default class Ant extends Entity {
         }
     }
 
+    getAcidLevel() {
+        return this.acidLevel;
+    }
+
+    getLife() {
+        return this.life;
+    }
 
 }

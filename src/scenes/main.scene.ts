@@ -5,6 +5,7 @@ import AntHud from "../entities/ant.hud";
 import Rock from "../entities/rock";
 import AcidParticle from "../entities/acid.particle";
 import Anthill from "../entities/anthill";
+import RedAnt from "../entities/redant";
 
 export default class MainScene extends Phaser.Scene {
 
@@ -24,6 +25,7 @@ export default class MainScene extends Phaser.Scene {
     private playerCamera: any;
     private hud: AntHud;
     private rocks: Phaser.Physics.Arcade.Group;
+    private redAntsGroup: Phaser.Physics.Arcade.Group;
 
 
     // constructor 
@@ -93,6 +95,12 @@ export default class MainScene extends Phaser.Scene {
             r.hit();
         })
 
+        this.physics.add.collider(this.redAntsGroup, this.mapLayers.obstacles);
+        this.physics.world.on('worldbounds', (body) => {
+            if (body.gameObject instanceof RedAnt) {
+                body.gameObject.kill();
+            }
+        });
 
     }
 
@@ -152,11 +160,20 @@ export default class MainScene extends Phaser.Scene {
     }
 
     createAnthills() {
+        this.redAntsGroup = this.physics.add.group({
+            classType: RedAnt,
+            maxSize: 50,
+            collideWorldBounds: true
+        });
+        for (let i = 0; i < 50; i++) {
+            const a = new RedAnt(this);
+            a.kill();
+            this.redAntsGroup.add(a);
+        }
         const anthillsTiles = this.mapLayers.objects.objects.filter(o => o.type == "anthill");
         for (let i = 0; i < anthillsTiles.length; i++) {
-            const a = new Anthill(this);
+            const a = new Anthill(this, this.redAntsGroup);
             a.setPosition(anthillsTiles[i].x, anthillsTiles[i].y);
-            console.log("hormigueroo");
         }
     }
 

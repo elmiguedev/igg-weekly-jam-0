@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
 import Entity from "../core/entity";
 
-export default class Anthill extends Entity {
+export default class RedAnt extends Entity {
 
     // props
     // -------------------
@@ -20,6 +20,7 @@ export default class Anthill extends Entity {
                 { key: "red_ant_walk", start: 0, end: 2, repeat: true },
             ],
         });
+
         this.init();
     }
 
@@ -27,7 +28,10 @@ export default class Anthill extends Entity {
     // -------------------
 
     init() {
-        // this.revive();
+
+        this.setCollideWorldBounds(true);
+        this.body.onWorldBounds = true;
+
     }
 
     update() {

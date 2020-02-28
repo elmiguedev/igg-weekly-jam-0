@@ -9,7 +9,7 @@ export default class Ant extends Entity {
     private life: number = 100;
     private maxVelocity: number = 50;
     private acceleration: number = 300;
-    private acidGenerator: Phaser.GameObjects.Particles.ParticleEmitterManager;
+    public acidGenerator: Phaser.GameObjects.Particles.ParticleEmitterManager;
 
     // constructor
     // -------------------
@@ -50,6 +50,7 @@ export default class Ant extends Entity {
 
     createAcidGenerator() {
         // crate emiter
+        // this.acidGenerator = this.scene.add.particles("acid");
         this.acidGenerator = this.scene.add.particles("acid");
         this.acidGenerator.createEmitter({
             speed: 20,
@@ -62,12 +63,24 @@ export default class Ant extends Entity {
             frequency: 110,
             maxParticles: 100,
         });
+        // this.scene.add.existing(this.acidGenerator);
+        // this.scene.physics.world.enable(this.acidGenerator);
+
+
+
 
         // create acid-regenerator
         setInterval(() => {
             if (this.acidLevel < 100)
                 this.acidLevel++;
         }, 300);
+
+
+        this.acid = this.scene.physics.add.group({
+            maxSize: 20,
+            key: "acid"
+        });
+
     }
 
 
@@ -108,14 +121,20 @@ export default class Ant extends Entity {
         }
     }
 
+    public acid: Phaser.Physics.Arcade.Group;
+
     throwAcid() {
         if (this.acidLevel > 0) {
-            this.acidGenerator.emitParticleAt(this.x, this.y - 8);
             this.acidLevel--;
+            // this.acidGenerator.emitParticleAt(this.x, this.y - 8);
+            // this.acidGenerator.emitters.first
+            const acid_particle: Phaser.Physics.Arcade.Image = this.acid.create();
+            acid_particle.setAccelerationY(-600);
+            acid_particle.setActive(true).setVisible(true);
+
+
         }
     }
-
-
 
 
 }

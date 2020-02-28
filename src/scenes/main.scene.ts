@@ -4,6 +4,7 @@ import Ant from "../entities/ant";
 import AntHud from "../entities/ant.hud";
 import Rock from "../entities/rock";
 import AcidParticle from "../entities/acid.particle";
+import Anthill from "../entities/anthill";
 
 export default class MainScene extends Phaser.Scene {
 
@@ -17,10 +18,13 @@ export default class MainScene extends Phaser.Scene {
         background: Phaser.Tilemaps.StaticTilemapLayer,
         obstacles: Phaser.Tilemaps.StaticTilemapLayer,
         overlayer: Phaser.Tilemaps.StaticTilemapLayer,
+        objects: Phaser.Tilemaps.ObjectLayer,
     };
 
     private playerCamera: any;
     private hud: AntHud;
+    private rocks: Phaser.Physics.Arcade.Group;
+
 
     // constructor 
     // ----------------------
@@ -43,6 +47,7 @@ export default class MainScene extends Phaser.Scene {
         this.createHud();
 
         this.createRocks();
+        this.createAnthills();
 
         this.createCollisions();
     }
@@ -58,6 +63,7 @@ export default class MainScene extends Phaser.Scene {
         const background = map.createStaticLayer("background", tileset, 0, 0);
         const obstacles = map.createStaticLayer("obstacles", tileset, 0, 0).setDepth(5);
         const overlayer = map.createStaticLayer("overlayer", tileset, 0, 0).setDepth(10);
+        const objects = map.getObjectLayer("objects");
 
 
         this.mapLayers = {
@@ -65,6 +71,7 @@ export default class MainScene extends Phaser.Scene {
             background: background,
             obstacles: obstacles,
             overlayer: overlayer,
+            objects: objects
         }
     }
 
@@ -76,18 +83,19 @@ export default class MainScene extends Phaser.Scene {
             collides: true
         })
         this.physics.add.collider(this.ant, this.mapLayers.obstacles);
-        this.physics.add.collider(this.ant.acid, this.mapLayers.obstacles, (a:AcidParticle,o) => {
-           a.hit();
+        this.physics.add.collider(this.ant.acid, this.mapLayers.obstacles, (a: AcidParticle, o) => {
+            a.hit();
         })
-        
+
         this.physics.add.collider(this.ant, this.rocks);
-        this.physics.add.collider(this.ant.acid, this.rocks, (a:AcidParticle,r:Rock) => {
+        this.physics.add.collider(this.ant.acid, this.rocks, (a: AcidParticle, r: Rock) => {
             a.hit();
             r.hit();
         })
 
 
     }
+
 
     configureCamera() {
         // this is a fix for tiles jitter
@@ -129,7 +137,6 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
-    private rocks: Phaser.Physics.Arcade.Group;
     createRocks() {
         this.rocks = this.physics.add.group({
             maxSize: 20,
@@ -137,12 +144,25 @@ export default class MainScene extends Phaser.Scene {
             immovable: true
         });
         // r.setImmovable(true);
-        const r1 = new Rock(this).setVisible(true).setActive(true).setPosition(20,740);
-        const r2 = new Rock(this).setVisible(true).setActive(true).setPosition(30,740);
-        const r3 = new Rock(this).setVisible(true).setActive(true).setPosition(25,750);
+        const r1 = new Rock(this).setVisible(true).setActive(true).setPosition(20, 740);
+        const r2 = new Rock(this).setVisible(true).setActive(true).setPosition(30, 740);
+        const r3 = new Rock(this).setVisible(true).setActive(true).setPosition(25, 750);
 
-        this.rocks.addMultiple([r1,r2,r3]);
+        this.rocks.addMultiple([r1, r2, r3]);
     }
+
+    createAnthills() {
+        const anthillsTiles = this.mapLayers.objects.objects.filter(o => o.type == "anthill");
+        for (let i = 0; i < anthillsTiles.length; i++) {
+            const a = new Anthill(this);
+            a.setPosition(anthillsTiles[i].x, anthillsTiles[i].y);
+            console.log("hormigueroo");
+        }
+    }
+
+    // update methods
+    // -----------------------------
+
 
     update() {
         this.checkCamera();
@@ -170,7 +190,7 @@ export default class MainScene extends Phaser.Scene {
 
         if (this.keys.space.isDown) {
             this.ant.throwAcid();
-            
+
         }
     }
 

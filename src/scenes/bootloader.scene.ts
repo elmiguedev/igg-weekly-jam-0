@@ -34,6 +34,10 @@ export default class BootloaderScene extends Phaser.Scene {
             frameWidth: 8,
             frameHeight: 8
         });
+        this.load.spritesheet("red_ant", "../assets/img/redant_prototype.png", {
+            frameWidth: 8,
+            frameHeight: 8
+        });
         this.load.spritesheet("rock", "../assets/img/rock_tiles.png", {
             frameWidth: 16,
             frameHeight: 16
@@ -41,11 +45,11 @@ export default class BootloaderScene extends Phaser.Scene {
 
 
         // load map_tiles spritesheet for extra objects
-        this.load.spritesheet("tiles", "../assets/img/tiles.png", {
+        this.load.spritesheet("tiles", "../assets/img/map_tiles.png", {
             frameWidth: 8,
             frameHeight: 8
         });
-        
+
         // load maps
         this.load.tilemapTiledJSON("l_1", "../assets/maps/l_1.json");
 

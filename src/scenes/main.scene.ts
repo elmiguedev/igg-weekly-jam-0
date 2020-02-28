@@ -80,13 +80,11 @@ export default class MainScene extends Phaser.Scene {
         this.physics.world.setBoundsCollision(true, true, true, true);
         this.physics.world.bounds.width = this.mapLayers.background.width;
         this.physics.world.bounds.height = this.mapLayers.background.height;
-        // this.mapLayers.obstacles.setCollisionByProperty({
-        //     collides: true
-        // })
+
         this.physics.add.collider(this.ant, this.obstaclesGroup);
-        // this.physics.add.collider(this.ant.acid, this.mapLayers.obstacles, (a: AcidParticle, o) => {
-        //     a.hit();
-        // })
+        this.physics.add.collider(this.ant.acid, this.obstaclesGroup, (a: AcidParticle, o) => {
+            a.hit();
+        })
 
         this.physics.add.collider(this.ant, this.rocks);
         this.physics.add.collider(this.ant.acid, this.rocks, (a: AcidParticle, r: Rock) => {
@@ -94,7 +92,9 @@ export default class MainScene extends Phaser.Scene {
             r.hit();
         })
 
-        // this.physics.add.collider(this.redAntsGroup, this.mapLayers.obstacles);
+        this.physics.add.collider(this.redAntsGroup, this.obstaclesGroup, (a: RedAnt, o) => {
+            a.sideStep();
+        });
         this.physics.world.on('worldbounds', (body) => {
             if (body.gameObject instanceof RedAnt) {
                 body.gameObject.kill();

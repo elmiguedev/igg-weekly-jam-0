@@ -41,5 +41,8 @@ export default class RedAnt extends Entity {
     // methods
     // -------------------
 
+    sideStep() {
+        this.setX(this.x + (0.5 * (this.body.velocity.x > 0 ? 1 : -1))) // esto hace que corrija posicion
+    }
 
 }

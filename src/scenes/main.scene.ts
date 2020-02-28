@@ -71,7 +71,7 @@ export default class MainScene extends Phaser.Scene {
             collides: true
         })
         this.physics.add.collider(this.ant, this.mapLayers.obstacles);
-        this.physics.add.overlap(this.ant.acidGenerator, this.mapLayers.obstacles, () => {
+        this.physics.add.collider(this.ant.acid, this.mapLayers.obstacles, () => {
             console.log("choca acido")
         })
     }

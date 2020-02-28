@@ -9,7 +9,8 @@ export default class Ant extends Entity {
     private life: number = 100;
     private maxVelocity: number = 50;
     private acceleration: number = 300;
-    public acidGenerator: Phaser.GameObjects.Particles.ParticleEmitterManager;
+    public acid: Phaser.Physics.Arcade.Group;
+    private acidRegenerationSpeed:number = 200;
 
     // constructor
     // -------------------
@@ -49,37 +50,23 @@ export default class Ant extends Entity {
     // -------------------
 
     createAcidGenerator() {
-        // crate emiter
-        // this.acidGenerator = this.scene.add.particles("acid");
-        this.acidGenerator = this.scene.add.particles("acid");
-        this.acidGenerator.createEmitter({
-            speed: 20,
-            accelerationY: -600,
-            accelerationX: { min: -300, max: 300 },
-            angle: { min: -85, max: -95 },
-            rotate: { min: -180, max: 180 },
-            lifespan: { min: 200, max: 400 },
-            blendMode: 'ADD',
-            frequency: 110,
-            maxParticles: 100,
+
+        // create acid particles group
+        this.acid = this.scene.physics.add.group({
+            maxSize: 20,
+            key: "acid"
         });
-        // this.scene.add.existing(this.acidGenerator);
-        // this.scene.physics.world.enable(this.acidGenerator);
-
-
-
+        for (let i = 0; i < 20; i++) {
+            const e = this.scene.physics.add.sprite(0, 0, "acid");
+            e.setActive(false).setVisible(false);
+            this.acid.add(e);
+        }
 
         // create acid-regenerator
         setInterval(() => {
             if (this.acidLevel < 100)
                 this.acidLevel++;
-        }, 300);
-
-
-        this.acid = this.scene.physics.add.group({
-            maxSize: 20,
-            key: "acid"
-        });
+        }, this.acidRegenerationSpeed);
 
     }
 
@@ -121,18 +108,23 @@ export default class Ant extends Entity {
         }
     }
 
-    public acid: Phaser.Physics.Arcade.Group;
-
     throwAcid() {
         if (this.acidLevel > 0) {
             this.acidLevel--;
-            // this.acidGenerator.emitParticleAt(this.x, this.y - 8);
-            // this.acidGenerator.emitters.first
-            const acid_particle: Phaser.Physics.Arcade.Image = this.acid.create();
-            acid_particle.setAccelerationY(-600);
+            this.createAcidParticle();
+        }
+    }
+
+    private createAcidParticle() {
+        const acid_particle = this.acid.getFirstDead();
+        if (acid_particle) {
+            acid_particle.setPosition(this.x, this.y-6);
+            acid_particle.setVelocityY(-200);
+            acid_particle.setVelocityX(Phaser.Math.Between(-100, 100));
             acid_particle.setActive(true).setVisible(true);
-
-
+            setTimeout(() => {
+                acid_particle.setActive(false).setVisible(false);
+            }, 200);
         }
     }
 

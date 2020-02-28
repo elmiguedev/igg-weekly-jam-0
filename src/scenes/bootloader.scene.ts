@@ -23,6 +23,9 @@ export default class BootloaderScene extends Phaser.Scene {
      */
     preload() {
 
+        // load images
+        this.load.image("acid", "../assets/img/acid.png");
+
         // load map_tiles
         this.load.image("map_tiles", "../assets/img/map_tiles.png");
 
@@ -42,8 +45,8 @@ export default class BootloaderScene extends Phaser.Scene {
         this.load.tilemapTiledJSON("l_1", "../assets/maps/l_1.json");
 
         // load fonts
-        this.load.image("namco_font","../assets/fonts/namco.png");
-        
+        this.load.image("namco_font", "../assets/fonts/namco.png");
+
 
         // load everything
         this.load.on('complete', () => {

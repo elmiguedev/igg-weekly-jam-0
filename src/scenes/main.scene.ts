@@ -8,6 +8,7 @@ import Anthill from "../entities/anthill";
 import RedAnt from "../entities/redant";
 import Flower from "../entities/flower";
 import Trebol from "../entities/trebol";
+import Mud from "../entities/mud";
 
 export default class MainScene extends Phaser.Scene {
 
@@ -27,6 +28,7 @@ export default class MainScene extends Phaser.Scene {
     private rocks: Phaser.Physics.Arcade.Group;
     private redAntsGroup: Phaser.Physics.Arcade.Group;
     private obstaclesGroup: Phaser.Physics.Arcade.Group;
+    private mudGroup: Phaser.Physics.Arcade.Group;
 
     // constructor 
     // ----------------------
@@ -95,16 +97,20 @@ export default class MainScene extends Phaser.Scene {
         this.physics.add.collider(this.redAntsGroup, this.obstaclesGroup, (a: RedAnt, o) => {
             a.sideStep();
         });
-        this.physics.add.collider(this.redAntsGroup, this.ant.acid, (a:RedAnt, c:AcidParticle) => {
+        this.physics.add.collider(this.redAntsGroup, this.ant.acid, (a: RedAnt, c: AcidParticle) => {
             a.hit();
             c.hit();
         });
 
-        this.physics.add.collider(this.ant,this.redAntsGroup, (a:Ant, r:RedAnt ) => {
+        this.physics.add.collider(this.ant, this.redAntsGroup, (a: Ant, r: RedAnt) => {
             r.sideStep();
             r.hit();
             a.hit();
 
+        })
+
+        this.physics.add.overlap(this.ant, this.mudGroup, (a: Ant, m: Mud) => {
+            a.slowDown();
         })
 
         this.physics.world.on('worldbounds', (body) => {
@@ -156,6 +162,10 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
+    createMud() {
+
+    }
+
     createRocks() {
         this.rocks = this.physics.add.group({
             maxSize: 20,
@@ -186,10 +196,16 @@ export default class MainScene extends Phaser.Scene {
             const a = new Anthill(this, this.redAntsGroup);
             a.setPosition(anthillsTiles[i].x, anthillsTiles[i].y);
         }
+
     }
 
     createObstacles() {
+        // create mud group
+        this.mudGroup = this.physics.add.group({ classType: Mud, immovable: true });
+        // create obstacles group
         this.obstaclesGroup = this.physics.add.group({ immovable: true });
+
+        // iterates all objects
         for (let i = 0; i < this.mapLayers.objects.objects.length; i++) {
             const o = this.mapLayers.objects.objects[i];
             switch (o.type) {
@@ -205,6 +221,14 @@ export default class MainScene extends Phaser.Scene {
                     t.setPosition(o.x, o.y);
                     t.setDepth(10);
                     this.obstaclesGroup.add(t);
+                    break;
+
+                case "mud":
+                    const m = new Mud(this);
+                    m.setPosition(o.x, o.y);
+                    m.setDepth(0);
+
+                    this.mudGroup.add(m);
                     break;
 
                 default:

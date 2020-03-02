@@ -10,6 +10,7 @@ export default class Ant extends Entity {
     private acidLevel: number = this.acidLevelMax;
     private life: number = 100;
     private maxVelocity: number = 50;
+    private mudVelocity: number = 20;
     private acceleration: number = 300;
     public acid: Phaser.Physics.Arcade.Group;
     private acidRegenerationSpeed: number = 50;
@@ -125,6 +126,18 @@ export default class Ant extends Entity {
             acid_particle.setVelocityX(Phaser.Math.Between(-100, 100));
             acid_particle.revive();
         }
+    }
+
+    private getVelocityYSign() {
+        return this.body.velocity.y / Math.abs(this.body.velocity.y);
+    }
+    private getVelocityXSign() {
+        return this.body.velocity.x / Math.abs(this.body.velocity.x);
+    }
+
+    slowDown() {
+
+        this.setVelocity(0, 0);
     }
 
     hit() {

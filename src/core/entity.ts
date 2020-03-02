@@ -30,6 +30,7 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
     constructor(config: EntityConfig) {
         super(config.scene, config.x, config.y, config.key);
         this.config = config;
+
         this.scene.physics.world.enable(this);
         this.scene.add.existing(this); // check
         this.configureEntity();

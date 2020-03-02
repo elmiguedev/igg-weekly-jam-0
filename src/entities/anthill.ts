@@ -47,7 +47,7 @@ export default class Anthill extends Entity {
         if (ant) {
             ant.revive();
             ant.setPosition(this.x, this.y);
-
+            ant.setDepth(1)
             const mvx = Phaser.Math.Between(-40, 40);
             const mvy = Phaser.Math.Between(40, 60);
             const ax = -200 * (mvx > 0 ? 1 : -1);

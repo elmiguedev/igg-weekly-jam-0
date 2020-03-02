@@ -31,6 +31,7 @@ export default class RedAnt extends Entity {
 
         this.life = 50;
         this.setCollideWorldBounds(true);
+        this.setDepth(1);
         // @ts-ignore
         this.body.onWorldBounds = true;
     }

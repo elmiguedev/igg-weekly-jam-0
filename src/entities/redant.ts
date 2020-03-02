@@ -5,7 +5,7 @@ export default class RedAnt extends Entity {
 
     // props
     // -------------------
-    private antGenerationRate: number = 100;
+    private life: number = 100;
 
     // constructor
     // -------------------
@@ -29,6 +29,7 @@ export default class RedAnt extends Entity {
 
     init() {
 
+        this.life = 50;
         this.setCollideWorldBounds(true);
         // @ts-ignore
         this.body.onWorldBounds = true;
@@ -43,6 +44,14 @@ export default class RedAnt extends Entity {
 
     sideStep() {
         this.setX(this.x + (0.5 * (this.body.velocity.x > 0 ? 1 : -1))) // esto hace que corrija posicion
+    }
+
+    hit() {
+        this.life--;
+        this.setVelocityY(0);
+        if (this.life <= 0) {
+            this.kill();
+        }
     }
 
 }

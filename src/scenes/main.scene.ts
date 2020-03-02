@@ -95,6 +95,18 @@ export default class MainScene extends Phaser.Scene {
         this.physics.add.collider(this.redAntsGroup, this.obstaclesGroup, (a: RedAnt, o) => {
             a.sideStep();
         });
+        this.physics.add.collider(this.redAntsGroup, this.ant.acid, (a:RedAnt, c:AcidParticle) => {
+            a.hit();
+            c.hit();
+        });
+
+        this.physics.add.collider(this.ant,this.redAntsGroup, (a:Ant, r:RedAnt ) => {
+            r.sideStep();
+            r.hit();
+            a.hit();
+
+        })
+
         this.physics.world.on('worldbounds', (body) => {
             if (body.gameObject instanceof RedAnt) {
                 body.gameObject.kill();

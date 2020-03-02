@@ -13,8 +13,8 @@ export default class AcidParticle extends Entity {
     constructor(scene: Phaser.Scene) {
         super({
             scene: scene,
-            x: 0,
-            y: 0,
+            x: -100,
+            y: -100,
             key: "acid",
         });
         this.init();
@@ -24,7 +24,7 @@ export default class AcidParticle extends Entity {
     // -------------------
 
     init() {
-        
+        this.kill();
     }
 
     update() {

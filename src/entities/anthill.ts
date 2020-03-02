@@ -51,7 +51,7 @@ export default class Anthill extends Entity {
             const mvx = Phaser.Math.Between(-40, 40);
             const mvy = Phaser.Math.Between(40, 60);
             const ax = -200 * (mvx > 0 ? 1 : -1);
-            const ay = 200;
+            const ay = 100;
             ant.setMaxVelocity(mvx, mvy)
             ant.setAccelerationY(ay);
             ant.setAccelerationX(ax); // corroborar el signo

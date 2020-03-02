@@ -55,13 +55,13 @@ export default class Ant extends Entity {
 
         // create acid particles group
         this.acid = this.scene.physics.add.group({
-            maxSize: 20,
+            maxSize: 10,
             classType: AcidParticle
         });
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 10; i++) {
             const e = new AcidParticle(this.scene);
-            e.kill();
             this.acid.add(e);
+            e.kill();
         }
 
         // create acid-regenerator
@@ -124,6 +124,13 @@ export default class Ant extends Entity {
             acid_particle.setVelocityY(-200);
             acid_particle.setVelocityX(Phaser.Math.Between(-100, 100));
             acid_particle.revive();
+        }
+    }
+
+    hit() {
+        this.life--;
+        if (this.life <= 0) {
+            this.kill();
         }
     }
 

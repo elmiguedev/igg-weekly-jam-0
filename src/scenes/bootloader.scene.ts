@@ -54,6 +54,11 @@ export default class BootloaderScene extends Phaser.Scene {
         });
 
         // load maps
+        this.load.tilemapTiledJSON("test_1", "../assets/maps/test_1.json");
+        this.load.tilemapTiledJSON("test_2", "../assets/maps/test_2.json");
+        this.load.tilemapTiledJSON("test_3", "../assets/maps/test_3.json");
+        this.load.tilemapTiledJSON("test_all", "../assets/maps/test_all.json");
+
         this.load.tilemapTiledJSON("l_1", "../assets/maps/l_1.json");
 
         // load fonts
@@ -63,6 +68,7 @@ export default class BootloaderScene extends Phaser.Scene {
         // load everything
         this.load.on('complete', () => {
             this.scene.start('MainScene');
+            // this.scene.start('TestScene');
         });
 
     }

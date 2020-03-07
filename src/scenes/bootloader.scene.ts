@@ -67,8 +67,8 @@ export default class BootloaderScene extends Phaser.Scene {
 
         // load everything
         this.load.on('complete', () => {
-            this.scene.start('MainScene');
-            // this.scene.start('TestScene');
+            // this.scene.start('MainScene');
+            this.scene.start('TestScene');
         });
 
     }

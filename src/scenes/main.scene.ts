@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
 
-import Ant from "../entities/ant";
+import AntCopy from "../entities/ant.copy";
 import AntHud from "../entities/ant.hud";
 import Rock from "../entities/rock";
 import AcidParticle from "../entities/acid.particle";
@@ -15,7 +15,7 @@ export default class MainScene extends Phaser.Scene {
     // properties 
     // ----------------------
 
-    private ant: Ant;
+    private ant: AntCopy;
     private keys: any;
     private mapLayers: {
         map: Phaser.Tilemaps.Tilemap,
@@ -102,14 +102,14 @@ export default class MainScene extends Phaser.Scene {
             c.hit();
         });
 
-        this.physics.add.collider(this.ant, this.redAntsGroup, (a: Ant, r: RedAnt) => {
+        this.physics.add.collider(this.ant, this.redAntsGroup, (a: AntCopy, r: RedAnt) => {
             r.sideStep();
             r.hit();
             a.hit();
 
         })
 
-        this.physics.add.overlap(this.ant, this.mudGroup, (a: Ant, m: Mud) => {
+        this.physics.add.overlap(this.ant, this.mudGroup, (a: AntCopy, m: Mud) => {
             a.slowDown();
         })
 
@@ -140,7 +140,7 @@ export default class MainScene extends Phaser.Scene {
         const x = this.mapLayers.map.widthInPixels / 2;
         const y = this.mapLayers.map.heightInPixels - 8;
 
-        this.ant = new Ant(this);
+        this.ant = new AntCopy(this);
         this.ant.setPosition(x, y);
     }
 
@@ -163,7 +163,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     createMud() {
-
+        
     }
 
     createRocks() {
@@ -249,13 +249,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     checkInput() {
-        if (this.keys.up.isDown) {
-            this.ant.move("up");
-        } else if (this.keys.down.isDown) {
-            this.ant.move("down");
-        } else {
-            this.ant.stop("vertical");
-        }
+        
 
         if (this.keys.left.isDown) {
             this.ant.move("left");
@@ -263,6 +257,14 @@ export default class MainScene extends Phaser.Scene {
             this.ant.move("right");
         } else {
             this.ant.stop("horizontal");
+        }
+
+        if (this.keys.up.isDown) {
+            this.ant.move("up");
+        } else if (this.keys.down.isDown) {
+            this.ant.move("down");
+        } else {
+            this.ant.stop("vertical");
         }
 
         if (this.keys.space.isDown) {

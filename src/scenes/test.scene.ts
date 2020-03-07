@@ -1,9 +1,10 @@
 import * as Phaser from "phaser";
-
+import Ant from "../entities/ant";
+import AntCopy from "../entities/ant.copy";
 
 export default class MainScene extends Phaser.Scene {
 
-    player: Phaser.Physics.Arcade.Sprite;
+    player: AntCopy;
     cursors: any;
     map: Phaser.Tilemaps.Tilemap;
     layer: Phaser.Tilemaps.DynamicTilemapLayer;
@@ -30,7 +31,8 @@ export default class MainScene extends Phaser.Scene {
         this.layer = this.map.createDynamicLayer("00/b", this.tileset, 0, 0);
         this.currentRoom = 0;
 
-        this.player = this.physics.add.sprite(10, 10, "red_ant", 0).setDepth(2);
+        this.player = new AntCopy(this);
+        this.player.setPosition(30,30);
 
         this.text = this.add.text(1, 1, "test").setDepth(3);
     }
@@ -68,10 +70,10 @@ export default class MainScene extends Phaser.Scene {
 
 
     update() {
-        if (this.cursors.up.isDown) this.player.y -= 1;
-        if (this.cursors.down.isDown) this.player.y += 1;
-        if (this.cursors.left.isDown) this.player.x -= 1;
-        if (this.cursors.right.isDown) this.player.x += 1;
+        if (this.cursors.up.isDown) this.player.move("up");
+        if (this.cursors.down.isDown) this.player.move("down");
+        if (this.cursors.left.isDown) this.player.move("left");
+        if (this.cursors.right.isDown) this.player.move("right");
 
         if (this.player.y < 0) {
             if (this.currentRoom >= 2) {

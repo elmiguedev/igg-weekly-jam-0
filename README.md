@@ -13,3 +13,10 @@ En el camino, deberá esquivar muchos obstáculos y enfrentarse a distintos bich
  
 Podrá nuestra hormiga recuperar los ingredientes y así salvar a la reina?
 
+## Mecánica de la hormiga
+
+El juego es un scroller top-down al estilo zelda, pero para mover a la hormiga, se avanza con una tecla y se "cambia el ángulo de giro" con las teclas de los costados, similar a cómo funciona el sistema de movimiento de GTA2.
+
+Al ser una hormiga, la única forma que tiene de defenderse es el ácido fórmico, pero cuidado, no es infinito, para poder utilizarlo la hormiga debe recuperar su capacidad de ácido.
+
+

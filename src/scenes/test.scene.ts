@@ -1,18 +1,47 @@
 import * as Phaser from "phaser";
 import Ant from "../entities/ant";
 import AntCopy from "../entities/ant.copy";
+import SolidStone from "../entities/solid.stone";
 
 export default class MainScene extends Phaser.Scene {
 
+    // Properties
+    // ---------------------------------
+
     player: AntCopy;
-    cursors: any;
-    map: Phaser.Tilemaps.Tilemap;
-    layer: Phaser.Tilemaps.DynamicTilemapLayer;
-    tileset: Phaser.Tilemaps.Tileset;
-    roomx: number;
-    roomy: number;
-    text: Phaser.GameObjects.Text;
-    backgroundText: Phaser.GameObjects.Text;
+    keys: {
+        up: Phaser.Input.Keyboard.Key,
+        left: Phaser.Input.Keyboard.Key,
+        right: Phaser.Input.Keyboard.Key,
+        acid: Phaser.Input.Keyboard.Key,
+    };
+    currentRoom: {
+        x: number,
+        y: number
+    };
+    mapLayers: {
+        map: Phaser.Tilemaps.Tilemap,
+        tileset: Phaser.Tilemaps.Tileset,
+        objects: Phaser.Tilemaps.ObjectLayer,
+        background: Phaser.Tilemaps.DynamicTilemapLayer
+    };
+    entities: {
+        solid: Phaser.Physics.Arcade.Group;
+    }
+    config: {
+        mapSize: {
+            x: number,
+            y: number
+        },
+        bounds: {
+            width: number,
+            height: number
+        }
+    }
+
+    // Constructor
+    // ---------------------------------
+
 
     constructor() {
         super({
@@ -20,120 +49,187 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
+    // Creation and configuration methods
+    // ------------------------------------
+
     init() {
-        this.cursors = {
+        this.createConfigData();
+        this.createPlayer();
+        this.createMap();
+        this.createKeys();
+    }
+
+    createConfigData() {
+        this.config = {
+            mapSize: { x: 4, y: 4 },
+            bounds: { width: 128, height: 96 }
+        }
+    }
+
+    createMap() {
+
+        // initialize room coords
+        this.currentRoom = {
+            x: 0,
+            y: 0
+        };
+
+        // initialize map
+        const map = this.make.tilemap({ key: "maps" });
+        const tileset = map.addTilesetImage("map_tiles", "map_tiles", 8, 8, 0, 0);
+
+        // set values to mapLayers object
+        this.mapLayers = {
+            map: map,
+            tileset: tileset,
+            background: null,
+            objects: null
+        }
+
+        // crate entities 
+        this.entities = {
+            solid: this.physics.add.group({ immovable: true })
+        }
+
+        // initialize main layer
+        this.changeRoom();
+    }
+
+    changeRoom() {
+        // get string coords
+        const x = this.currentRoom.x.toString();
+        const y = this.currentRoom.y.toString();
+
+        // get layers names
+        const background = x + y + "/b";
+        const objects = x + y + "/o";
+
+        if (this.mapLayers.background) {
+            this.clearMap();
+        }
+
+        this.mapLayers.background = this.mapLayers.map.createDynamicLayer(
+            background,
+            this.mapLayers.tileset,
+            0,
+            0
+        ).setDepth(1);
+        this.mapLayers.objects = this.mapLayers.map.getObjectLayer(objects);
+        this.createObjects();
+    }
+
+    clearMap() {
+        this.mapLayers.background.destroy(false); // false if you doesn't want to erase this map from tilemap
+        this.mapLayers.objects = null;
+        this.entities.solid.clear(true);
+    }
+
+    createObjects() {
+        // create entities groups
+        if (!this.entities.solid)
+            this.entities.solid = this.physics.add.group({ immovable: true });
+
+        // iterates all layer objects
+        for (let i = 0; i < this.mapLayers.objects.objects.length; i++) {
+            const object = this.mapLayers.objects.objects[i];
+
+            // create each type object
+            switch (object.type) {
+                case "solidStone":
+                    this.entities.solid.add(new SolidStone(this,object.x,object.y).setDepth(3));
+                    break;
+
+                default:
+                    break;
+            }
+
+        }
+
+
+
+    }
+
+    createPlayer() {
+        this.player = new AntCopy(this);
+        this.player.setPosition(16, 32);
+    }
+
+    createKeys() {
+        this.keys = {
             up: this.input.keyboard.addKey("up"),
-            down: this.input.keyboard.addKey("down"),
             left: this.input.keyboard.addKey("left"),
             right: this.input.keyboard.addKey("right"),
-            fire: this.input.keyboard.addKey("space"),
+            acid: this.input.keyboard.addKey("space"),
         }
-
-        this.map = this.make.tilemap({ key: "maps" });
-        this.tileset = this.map.addTilesetImage("map_tiles", "map_tiles", 8, 8, 0, 0);
-
-        this.roomx = 0;
-        this.roomy = 0;
-
-        
-        this.player = new AntCopy(this);
-        this.player.setPosition(30,30);
-        
-        this.text = this.add.text(1, 1, `rooms: ${this.roomx}, ${this.roomy}`).setDepth(3);
-        this.backgroundText= this.add.text(1, 12, `background:`).setDepth(3);
-        this.changeMapAll();
     }
 
-
-    // changeMap() {
-    //     console.log(this.currentRoom);
-    //     this.map.destroy();
-    //     this.layer.destroy();
-
-    //     this.map = this.make.tilemap({ key: "test_" + this.currentRoom.toString() });
-    //     this.layer = this.map.createStaticLayer("background", this.tileset, 0, 0).setDepth(1);
-
-    // }
-
-    changeMapAll() {
-        const roomx = this.roomx.toString();
-        const roomy = this.roomy.toString();
-        const background = roomx + roomy + "/b";
-        const objects = roomx + roomy + "/o";
-        
-        this.text.setText(`rooms: ${this.roomx}, ${this.roomy}`);
-        this.backgroundText.setText(`bg: ${background}`);
-
-        if (this.layer) {
-            this.layer.destroy(false);
-        }
-        this.layer = this.map.createDynamicLayer(background, this.tileset, 0, 0);
-        // const l = this.map.getLayer(background);
-        // console.log(l.tilemapLayer);
-        // if (l.tilemapLayer) {
-        //     const old = this.layer;
-        //     old.destroy(false);
-        //     this.layer = <Phaser.Tilemaps.DynamicTilemapLayer>l.tilemapLayer;
-        //     this.layer.setVisible(true).setActive(true);
-        // } else {
-        //     this.layer = this.map.createDynamicLayer(background, this.tileset, 0, 0);
-        // }
+    createCollisions() {
 
     }
 
-
+    // Game loop methods
+    // ---------------------------------
 
     update() {
-        if (this.cursors.up.isDown) this.player.move("up");
-        if (this.cursors.down.isDown) this.player.move("down");
-        if (this.cursors.left.isDown) this.player.move("left");
-        if (this.cursors.right.isDown) this.player.move("right");
-        if (this.cursors.fire.isDown) this.player.throwAcid();
+        this.checkCollisions();
+        this.checkInput();
+        this.checkRoom();
+    }
 
+    checkInput() {
+        if (this.keys.up.isDown) this.player.move("up");
+        if (this.keys.left.isDown) this.player.move("left");
+        if (this.keys.right.isDown) this.player.move("right");
+        if (this.keys.acid.isDown) this.player.throwAcid();
+    }
 
+    checkRoom() {
         if (this.player.y < 0) {
-            if (this.roomy >= 4) {
+            if (this.currentRoom.y >= this.config.mapSize.y) {
                 this.player.y = 0;
             } else {
-                this.roomy++;
-                this.player.y = 96;
-                this.changeMapAll();
+                this.currentRoom.y++;
+                this.player.y = this.config.bounds.height;
+                this.changeRoom();
             }
         }
 
-        if (this.player.y > 96) {
-            if (this.roomy <= 0) {
-                this.player.y = 96;
+        if (this.player.y > this.config.bounds.height) {
+            if (this.currentRoom.y <= 0) {
+                this.player.y = this.config.bounds.height;
             } else {
-                this.roomy--;
+                this.currentRoom.y--;
                 this.player.y = 0;
-                this.changeMapAll();
+                this.changeRoom();
             }
         }
 
         if (this.player.x < 0) {
-            if (this.roomx <= 0) {
+            if (this.currentRoom.x <= 0) {
                 this.player.x = 0;
             } else {
-                this.roomx--;
-                this.player.x = 128;
-                this.changeMapAll();
+                this.currentRoom.x--;
+                this.player.x = this.config.bounds.width;
+                this.changeRoom();
             }
         }
 
-        if (this.player.x > 128) {
-            if (this.roomx >= 4) {
-                this.player.x = 128;
+        if (this.player.x > this.config.bounds.width) {
+            if (this.currentRoom.x >= this.config.mapSize.x) {
+                this.player.x = this.config.bounds.width;
             } else {
-                this.roomx++;
+                this.currentRoom.x++;
                 this.player.x = 0;
-                this.changeMapAll();
+                this.changeRoom();
             }
         }
+    }
+
+    checkCollisions() {
+        this.physics.collide(this.entities.solid, this.player);
 
 
     }
-
 
 
 }

@@ -54,12 +54,7 @@ export default class BootloaderScene extends Phaser.Scene {
         });
 
         // load maps
-        this.load.tilemapTiledJSON("test_1", "../assets/maps/test_1.json");
-        this.load.tilemapTiledJSON("test_2", "../assets/maps/test_2.json");
-        this.load.tilemapTiledJSON("test_3", "../assets/maps/test_3.json");
-        this.load.tilemapTiledJSON("test_all", "../assets/maps/test_all.json");
-
-        this.load.tilemapTiledJSON("l_1", "../assets/maps/l_1.json");
+        this.load.tilemapTiledJSON("maps", "../assets/maps/maps.json");
 
         // load fonts
         this.load.image("namco_font", "../assets/fonts/namco.png");

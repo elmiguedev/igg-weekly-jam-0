@@ -2,7 +2,8 @@
 Juego para la primera (primera!) edición de Indie Game Garage - Weekly Jam.
 
 ## Trama principal
-La reina hormiga esta enferma y necesitamos recolectar los 4 ingredientes para que la hormiga chaman pueda hacer la pocima curativa. 
+La reina hormiga esta enferma y necesitamos recolectar los 4 ingredientes para que la hormiga chaman pueda hacer la pocima curativa: trebol suerte (jardin), agua mística (desierto), plumerillo (laguna), pepita dorada (galería)
+
 Para eso, nuestra hormiga deberá ir por distintas zonas del reino para conseguir los 4 ingredientes, debiendo pasar por los 4 distritos:
   - Jardín
   - Arena

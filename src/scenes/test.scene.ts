@@ -6,6 +6,7 @@ import Rock from "../entities/rock";
 import AcidParticle from "../entities/acid.particle";
 import Powerup from "../entities/powerup";
 import AntHud from "../entities/ant.hud";
+import BallBug from "../entities/ball.bug";
 
 export default class MainScene extends Phaser.Scene {
 
@@ -34,6 +35,7 @@ export default class MainScene extends Phaser.Scene {
         solid: Phaser.Physics.Arcade.Group,
         rocks: Phaser.Physics.Arcade.Group,
         powerups: Phaser.Physics.Arcade.Group,
+        ballbugs: Phaser.Physics.Arcade.Group,
     }
     antHud: AntHud;
     config: {
@@ -100,6 +102,7 @@ export default class MainScene extends Phaser.Scene {
             solid: this.physics.add.group({ immovable: true }),
             rocks: this.physics.add.group({ immovable: true }),
             powerups: this.physics.add.group({ immovable: true }),
+            ballbugs: this.physics.add.group(),
         }
 
         // initialize main layer
@@ -135,6 +138,7 @@ export default class MainScene extends Phaser.Scene {
         this.entities.solid.clear(true);
         this.entities.rocks.clear(true);
         this.entities.powerups.clear(true);
+        this.entities.ballbugs.clear(true);
     }
 
     createObjects() {
@@ -149,15 +153,19 @@ export default class MainScene extends Phaser.Scene {
             // create each type object
             switch (object.type) {
                 case "solidStone":
-                    this.entities.solid.add(new SolidStone(this,object.x,object.y).setDepth(3));
+                    this.entities.solid.add(new SolidStone(this, object.x, object.y).setDepth(3));
                     break;
                 case "rock":
-                    this.entities.rocks.add(new Rock(this,object.x,object.y).setDepth(3));
+                    this.entities.rocks.add(new Rock(this, object.x, object.y).setDepth(3));
                     break;
-                case "powerup": 
-                    this.entities.powerups.add(new Powerup(this,object.x,object.y,object.name).setDepth(3));
+                case "powerup":
+                    this.entities.powerups.add(new Powerup(this, object.x, object.y, object.name).setDepth(3));
                     break;
-
+                case "ballbug":
+                    const b = new BallBug(this, object.x, object.y).setDepth(3);
+                    this.entities.ballbugs.add(b);
+                    b.init();
+                    break;
 
 
                 default:
@@ -207,9 +215,9 @@ export default class MainScene extends Phaser.Scene {
         if (this.keys.up.isDown) this.player.move("up");
         if (this.keys.left.isDown) this.player.move("left");
         if (this.keys.right.isDown) this.player.move("right");
-        if (this.keys.acid.isDown){
+        if (this.keys.acid.isDown) {
             this.player.throwAcid();
-        } 
+        }
 
         if (this.keys.testKey.isDown) {
             //this.player.acidLevelMax = 200;
@@ -264,10 +272,13 @@ export default class MainScene extends Phaser.Scene {
         this.physics.collide(this.entities.solid, this.player);
 
         // breakeable rocks
-        this.physics.collide(this.entities.rocks,this.player);
-        this.physics.collide(this.entities.rocks,this.player.acid, (r:Rock, a:AcidParticle) => {
+        this.physics.collide(this.entities.rocks, this.player);
+        this.physics.collide(this.entities.rocks, this.player.acid, (r: Rock, a: AcidParticle) => {
             r.hit();
             a.hit();
+        })
+        this.physics.overlap(this.entities.solid, this.entities.ballbugs, (s, b: BallBug) => {
+            b.invert();
         })
 
     }

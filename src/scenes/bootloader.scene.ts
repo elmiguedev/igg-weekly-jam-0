@@ -37,6 +37,10 @@ export default class BootloaderScene extends Phaser.Scene {
             frameWidth: 8,
             frameHeight: 8
         });
+        this.load.spritesheet("ballbug", "../assets/img/bug_ball.png", {
+            frameWidth: 8,
+            frameHeight: 8
+        });
         this.load.spritesheet("red_ant", "../assets/img/redant_prototype.png", {
             frameWidth: 8,
             frameHeight: 8

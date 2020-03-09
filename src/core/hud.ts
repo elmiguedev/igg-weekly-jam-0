@@ -2,7 +2,7 @@ import * as Phaser from "phaser";
 
 export default class Hud {
 
-    private mainScene: Phaser.Scene;
+    protected mainScene: Phaser.Scene;
     private hudScene: Phaser.Scene;
     private labels = {};
     constructor(scene:Phaser.Scene) {

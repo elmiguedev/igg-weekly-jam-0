@@ -10,11 +10,11 @@ export default class Rock extends Entity {
     // constructor
     // -------------------
 
-    constructor(scene: Phaser.Scene) {
+    constructor(scene: Phaser.Scene,x:number, y:number) {
         super({
             scene: scene,
-            x: 0,
-            y: 0,
+            x: x,
+            y: y,
             key: "rock",
             frame: 0,
             immovable: true
@@ -26,7 +26,7 @@ export default class Rock extends Entity {
     // -------------------
 
     init() {
-
+        this.setOrigin(0,1);
     }
 
     update() {

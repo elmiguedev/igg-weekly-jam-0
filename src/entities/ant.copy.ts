@@ -6,14 +6,16 @@ export default class AntCopy extends Entity {
 
     // props
     // -------------------
-    private acidLevelMax: number = 1000;
-    private acidLevel: number = this.acidLevelMax;
-    private life: number = 100;
-    private maxVelocity: number = 50;
+    public acidLevelMax: number = 100;
+    public acidLevel: number = this.acidLevelMax;
+    public life: number = 100;
+    public maxVelocity: number = 50;
     private mudVelocity: number = 20;
     private acceleration: number = 300;
     public acid: Phaser.Physics.Arcade.Group;
-    private acidRegenerationSpeed: number = 50;
+    public acidRegenerationSpeed: number = 150;
+
+    private acidInterval:any;
 
     // constructor
     // -------------------
@@ -65,11 +67,24 @@ export default class AntCopy extends Entity {
         }
 
         // create acid-regenerator
-        setInterval(() => {
+        this.createAcidRegenerationTimer();
+
+    }
+
+    setAcidRegenerationSpeed(speed: number) {
+        this.acidRegenerationSpeed = speed;
+        this.createAcidRegenerationTimer();
+    }
+
+    createAcidRegenerationTimer() {
+        if (this.acidInterval){
+            clearInterval(this.acidInterval);
+        }
+
+        this.acidInterval = setInterval(() => {
             if (this.acidLevel < this.acidLevelMax)
                 this.acidLevel++;
         }, this.acidRegenerationSpeed);
-
     }
 
     walk() {
@@ -111,8 +126,8 @@ export default class AntCopy extends Entity {
 
     throwAcid() {
         if (this.acidLevel > 0) {
-            this.acidLevel--;
             this.createAcidParticle();
+            this.acidLevel--;
         }
     }
 

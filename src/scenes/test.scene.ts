@@ -2,6 +2,10 @@ import * as Phaser from "phaser";
 import Ant from "../entities/ant";
 import AntCopy from "../entities/ant.copy";
 import SolidStone from "../entities/solid.stone";
+import Rock from "../entities/rock";
+import AcidParticle from "../entities/acid.particle";
+import Powerup from "../entities/powerup";
+import AntHud from "../entities/ant.hud";
 
 export default class MainScene extends Phaser.Scene {
 
@@ -14,6 +18,7 @@ export default class MainScene extends Phaser.Scene {
         left: Phaser.Input.Keyboard.Key,
         right: Phaser.Input.Keyboard.Key,
         acid: Phaser.Input.Keyboard.Key,
+        testKey: Phaser.Input.Keyboard.Key
     };
     currentRoom: {
         x: number,
@@ -26,8 +31,11 @@ export default class MainScene extends Phaser.Scene {
         background: Phaser.Tilemaps.DynamicTilemapLayer
     };
     entities: {
-        solid: Phaser.Physics.Arcade.Group;
+        solid: Phaser.Physics.Arcade.Group,
+        rocks: Phaser.Physics.Arcade.Group,
+        powerups: Phaser.Physics.Arcade.Group,
     }
+    antHud: AntHud;
     config: {
         mapSize: {
             x: number,
@@ -57,6 +65,7 @@ export default class MainScene extends Phaser.Scene {
         this.createPlayer();
         this.createMap();
         this.createKeys();
+        this.createHud();
     }
 
     createConfigData() {
@@ -88,7 +97,9 @@ export default class MainScene extends Phaser.Scene {
 
         // crate entities 
         this.entities = {
-            solid: this.physics.add.group({ immovable: true })
+            solid: this.physics.add.group({ immovable: true }),
+            rocks: this.physics.add.group({ immovable: true }),
+            powerups: this.physics.add.group({ immovable: true }),
         }
 
         // initialize main layer
@@ -122,6 +133,8 @@ export default class MainScene extends Phaser.Scene {
         this.mapLayers.background.destroy(false); // false if you doesn't want to erase this map from tilemap
         this.mapLayers.objects = null;
         this.entities.solid.clear(true);
+        this.entities.rocks.clear(true);
+        this.entities.powerups.clear(true);
     }
 
     createObjects() {
@@ -138,6 +151,14 @@ export default class MainScene extends Phaser.Scene {
                 case "solidStone":
                     this.entities.solid.add(new SolidStone(this,object.x,object.y).setDepth(3));
                     break;
+                case "rock":
+                    this.entities.rocks.add(new Rock(this,object.x,object.y).setDepth(3));
+                    break;
+                case "powerup": 
+                    this.entities.powerups.add(new Powerup(this,object.x,object.y,object.name).setDepth(3));
+                    break;
+
+
 
                 default:
                     break;
@@ -154,12 +175,17 @@ export default class MainScene extends Phaser.Scene {
         this.player.setPosition(16, 32);
     }
 
+    createHud() {
+        this.antHud = new AntHud(this);
+    }
+
     createKeys() {
         this.keys = {
             up: this.input.keyboard.addKey("up"),
             left: this.input.keyboard.addKey("left"),
             right: this.input.keyboard.addKey("right"),
             acid: this.input.keyboard.addKey("space"),
+            testKey: this.input.keyboard.addKey("q")
         }
     }
 
@@ -174,13 +200,21 @@ export default class MainScene extends Phaser.Scene {
         this.checkCollisions();
         this.checkInput();
         this.checkRoom();
+        this.checkHud();
     }
 
     checkInput() {
         if (this.keys.up.isDown) this.player.move("up");
         if (this.keys.left.isDown) this.player.move("left");
         if (this.keys.right.isDown) this.player.move("right");
-        if (this.keys.acid.isDown) this.player.throwAcid();
+        if (this.keys.acid.isDown){
+            this.player.throwAcid();
+        } 
+
+        if (this.keys.testKey.isDown) {
+            //this.player.acidLevelMax = 200;
+            this.player.setAcidRegenerationSpeed(80);
+        }
     }
 
     checkRoom() {
@@ -226,9 +260,20 @@ export default class MainScene extends Phaser.Scene {
     }
 
     checkCollisions() {
+        // solids
         this.physics.collide(this.entities.solid, this.player);
 
+        // breakeable rocks
+        this.physics.collide(this.entities.rocks,this.player);
+        this.physics.collide(this.entities.rocks,this.player.acid, (r:Rock, a:AcidParticle) => {
+            r.hit();
+            a.hit();
+        })
 
+    }
+
+    checkHud() {
+        this.antHud.update(this.player);
     }
 
 

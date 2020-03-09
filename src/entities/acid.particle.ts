@@ -24,6 +24,7 @@ export default class AcidParticle extends Entity {
     // -------------------
 
     init() {
+        this.setDepth(6);
         this.kill();
     }
 
